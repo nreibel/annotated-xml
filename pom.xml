@@ -1,0 +1,12 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>AnnotatedXml</name>
+  <description>Library for reading and writing XML files through annotations</description>
+  <groupId>com.github.nreibel</groupId>
+  <artifactId>annotated-xml</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  
+</project>

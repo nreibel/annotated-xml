@@ -1,4 +1,4 @@
-Let's take this XMl example :
+Let's take this XML example :
 <code>
 ```
 <node uniqueId="node#1">
@@ -21,7 +21,7 @@ public MyNode(IXmlItem parent, Element el) throws AnnotationParsingException, No
 }
 ```
 </code>
-It is up to the developper to navigate through the XML elements to pass the correct XML element to the constructor, for example :
+It is up to the developer to navigate through the XML elements to pass the correct XML element to the constructor, for example :
 <code>
 ```
 Element el = AbstractXmlItem.getFirstElement(rootNode, "node_name");

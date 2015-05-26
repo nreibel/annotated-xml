@@ -1,12 +1,18 @@
 package com.github.nreibel.xml;
 
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
-import com.github.nreibel.xml.exceptions.NodeNotFoundException;
 
 public abstract class AbstractXmlItem implements IXmlItem {
 
@@ -18,7 +24,12 @@ public abstract class AbstractXmlItem implements IXmlItem {
 
 	@Override
 	public Document getDocument() {
-		return parent != null ? parent.getDocument() : null;
+		if (parent == null) {
+			String method = Thread.currentThread().getStackTrace()[1].getMethodName();
+			String message = String.format("One of %s parent classes must implement %s()", this.getClass().getSimpleName(), method);
+			throw new NullPointerException(message);
+		}
+		return parent.getDocument();
 	}
 
 	@Override
@@ -34,7 +45,7 @@ public abstract class AbstractXmlItem implements IXmlItem {
 	@Override
 	public Element toElement() {
 		Element root = getDocument().createElement(this.getNodeName());
-
+		
 		for(IXmlItem i : this.getChildren()) {
 			root.appendChild(i.toElement());
 		}
@@ -46,21 +57,20 @@ public abstract class AbstractXmlItem implements IXmlItem {
 		return root;
 	}
 
-	public static String getElementValue(Element el, String tagName) throws NodeNotFoundException {
+	@Override
+	public String toString() {
 		try {
-			return getFirstElement(el, tagName).getTextContent();
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			StreamResult result = new StreamResult(new StringWriter());
+			DOMSource source = new DOMSource(this.toElement());
+			transformer.transform(source, result);
+			return result.getWriter().toString();
 		}
-		catch(Exception ex) {
-			throw new NodeNotFoundException(el, tagName);
-		}
-	}
-
-	public static Element getFirstElement(Element el, String tagName) throws NodeNotFoundException {
-		try {
-			return (Element) el.getElementsByTagName(tagName).item(0);
-		}
-		catch(Exception ex) {
-			throw new NodeNotFoundException(el, tagName);
+		catch (TransformerException e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 }

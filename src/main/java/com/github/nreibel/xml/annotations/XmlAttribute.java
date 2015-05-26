@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XmlAttribute {
 
-	boolean Required() default true;
+	boolean Required() default false;
 
 }

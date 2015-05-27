@@ -1,5 +1,8 @@
 package com.github.nreibel.xml;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.w3c.dom.Element;
 
 import com.github.nreibel.xml.exceptions.AnnotationParsingException;
@@ -15,14 +18,14 @@ public class XmlLeaf extends AnnotatedXmlItem {
 	public XmlLeaf(IXmlItem parent) {
 		super(parent);
 	}
-
+	
 	@Override
 	public void doInitFields(Element el) throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
 		value = el.getTextContent();
 		nodeName = el.getNodeName();
 	}
 
-	public String getValue() {
+	public String getTextContent() {
 		return value;
 	}
 
@@ -30,12 +33,27 @@ public class XmlLeaf extends AnnotatedXmlItem {
 	public String getNodeName() {
 		return nodeName;
 	}
+	
+	@Override
+	public Collection<? extends IXmlItem> getChildren() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public Collection<? extends IXmlAttribute> getAttributes() {
+		return Collections.emptyList();
+	}
 
 	@Override
 	public Element toElement() {
-		Element el = super.toElement();
+		Element el = this.getDocument().createElement(nodeName);
 		el.setTextContent(value);
 		return el;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("<%s>%s</%s>", nodeName, value, nodeName);
 	}
 
 	public static class FactoryImpl implements Descriptor<XmlLeaf> {

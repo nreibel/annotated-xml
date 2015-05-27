@@ -13,11 +13,6 @@ public class Child extends AnnotatedXmlItem {
 		super(parent);
 	}
 
-	@Override
-	public String getNodeName() {
-		return "child";
-	}
-
 	public static class FactoryImpl implements Descriptor<Child> {
 		@Override
 		public Child createItem(IXmlItem parent) {

@@ -18,12 +18,21 @@ import com.github.nreibel.xml.utils.Utils;
 
 public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 
+	private String nodeName = null;
+	
 	public AnnotatedXmlItem(IXmlItem parent) {
 		super(parent);
 	}
 	
+	@Override
+	public String getNodeName() {
+		return nodeName;
+	}
+
 	public void doInitFields(Element el) throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
 
+		nodeName = el.getNodeName();
+		
 		// Init child nodes
 		Map<Field, XmlChild> children = Utils.getFieldsWithAnnotation(this.getClass(), XmlChild.class);
 		for(Entry<Field, XmlChild> entry : children.entrySet()) {
@@ -79,7 +88,7 @@ public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 				e.printStackTrace();
 			}
 		}
-
+		
 		return list;
 	}
 

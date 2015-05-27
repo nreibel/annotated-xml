@@ -19,5 +19,9 @@ public class DefaultXmlAttribute implements IXmlAttribute {
 	public String getValue() {
 		return value;
 	}
-
+	
+	@Override
+	public String toString() {
+		return String.format("%s{%s=%s}", this.getClass().getSimpleName(), name, value);
+	}
 }

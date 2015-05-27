@@ -1,18 +1,13 @@
 package com.github.nreibel.xml;
 
-import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import java.util.LinkedList;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.github.nreibel.xml.utils.Utils;
 
 public abstract class AbstractXmlItem implements IXmlItem {
 
@@ -25,8 +20,7 @@ public abstract class AbstractXmlItem implements IXmlItem {
 	@Override
 	public Document getDocument() {
 		if (parent == null) {
-			String method = Thread.currentThread().getStackTrace()[1].getMethodName();
-			String message = String.format("One of %s parent classes must implement %s()", this.getClass().getSimpleName(), method);
+			String message = String.format("One of %s parent classes must implement getDocument()", this.getClass().getSimpleName());
 			throw new NullPointerException(message);
 		}
 		return parent.getDocument();
@@ -44,8 +38,8 @@ public abstract class AbstractXmlItem implements IXmlItem {
 
 	@Override
 	public Element toElement() {
-		Element root = getDocument().createElement(this.getNodeName());
-		
+		Element root = this.getDocument().createElement(this.getNodeName());
+
 		for(IXmlItem i : this.getChildren()) {
 			root.appendChild(i.toElement());
 		}
@@ -57,20 +51,50 @@ public abstract class AbstractXmlItem implements IXmlItem {
 		return root;
 	}
 
+	private final String getAttributesString() {
+		Collection<String> strings = new LinkedList<>();
+
+		for(IXmlAttribute attr : this.getAttributes()) {
+			String str = String.format("%s=\"%s\"", attr.getName(), attr.getValue());
+			strings.add(str);
+		}
+
+		return Utils.join(strings,  " ");
+	}
+
 	@Override
 	public String toString() {
-		try {
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-			StreamResult result = new StreamResult(new StringWriter());
-			DOMSource source = new DOMSource(this.toElement());
-			transformer.transform(source, result);
-			return result.getWriter().toString();
+
+		if (this.getChildren().isEmpty()) {
+			if (this.getAttributes().isEmpty()) {
+				return String.format("<%s/>", this.getNodeName());
+			}
+			else {
+				return String.format("<%s %s/>", this.getNodeName(), this.getAttributesString());
+			}
 		}
-		catch (TransformerException e) {
-			e.printStackTrace();
-			return null;
+		else {
+			String head = null;
+			String foot = String.format("</%s>", this.getNodeName());
+
+			if (this.getAttributes().isEmpty()) {
+				head = String.format("<%s>\n", this.getNodeName());
+			}
+			else {
+				head = String.format("<%s %s>\n", this.getNodeName(), this.getAttributesString());
+			}
+
+			StringBuilder sb = new StringBuilder();
+
+			sb.append(head);
+			for (IXmlItem child : this.getChildren()) {
+				String childStr = child.toString().replaceAll("(?m)^", "  ");
+				sb.append(childStr);
+				sb.append("\n");
+			}
+			sb.append(foot);
+
+			return sb.toString();
 		}
 	}
 }

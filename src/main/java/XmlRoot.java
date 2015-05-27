@@ -38,16 +38,11 @@ public class XmlRoot extends AnnotatedXmlItem {
 	}
 
 	public String getLeaf() {
-		return leaf.getValue();
+		return leaf.getTextContent();
 	}
 	
 	public XmlCollection getCollection() {
 		return collection;
-	}
-
-	@Override
-	public String getNodeName() {
-		return "root";
 	}
 
 	@Override

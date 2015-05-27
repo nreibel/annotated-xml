@@ -4,8 +4,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 
-import com.github.nreibel.xml.XmlLeaf;
-
 
 public class Main {
 
@@ -17,9 +15,5 @@ public class Main {
 		root.doInitFields(doc.getDocumentElement());
 
 		System.out.println(root);
-
-		for(XmlLeaf it : root.getCollection().getChildrenByTag("item")) {
-			System.out.println(it);
-		}
 	}
 }

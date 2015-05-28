@@ -1,4 +1,6 @@
-package com.github.nreibel.xml;
+package com.github.nreibel.xml.impl;
+
+import com.github.nreibel.xml.IXmlAttribute;
 
 public class DefaultXmlAttribute implements IXmlAttribute {
 

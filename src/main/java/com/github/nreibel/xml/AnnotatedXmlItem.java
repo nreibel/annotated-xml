@@ -14,24 +14,28 @@ import com.github.nreibel.xml.annotations.XmlChild;
 import com.github.nreibel.xml.exceptions.AnnotationParsingException;
 import com.github.nreibel.xml.exceptions.AttributeNotFoundException;
 import com.github.nreibel.xml.exceptions.NodeNotFoundException;
+import com.github.nreibel.xml.impl.DefaultXmlAttribute;
 import com.github.nreibel.xml.utils.Utils;
 
 public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 
-	private String nodeName = null;
+	private final Element element;
 	
-	public AnnotatedXmlItem(IXmlItem parent) {
+	public AnnotatedXmlItem(Element el, IXmlItem parent) {
 		super(parent);
+		element = el;
 	}
 	
+	public final Element getElement() {
+		return element;
+	}
+
 	@Override
 	public String getNodeName() {
-		return nodeName;
+		return element.getNodeName();
 	}
 
-	public void doInitFields(Element el) throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
-
-		nodeName = el.getNodeName();
+	public void doInitFields() throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
 		
 		// Init child nodes
 		Map<Field, XmlChild> children = Utils.getFieldsWithAnnotation(this.getClass(), XmlChild.class);
@@ -41,10 +45,10 @@ public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 			XmlChild annotation = entry.getValue();
 
 			try {
-				Element childNode = Utils.getFirstElementOrDie(el, field.getName());
-				Descriptor<?> desc = annotation.Factory().newInstance();
-				AnnotatedXmlItem it = desc.createItem(this);
-				it.doInitFields(childNode);
+				Element childNode = Utils.getFirstElementOrDie(element, field.getName());
+				IXmlItemFactory<?> desc = annotation.Factory().newInstance();
+				AnnotatedXmlItem it = desc.createItem(childNode, this);
+				it.doInitFields();
 				Utils.setField(field, this, it);
 			}
 			catch (NodeNotFoundException e) {
@@ -63,9 +67,9 @@ public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 			XmlAttribute annotation = entry.getValue();
 
 			try {
-				String value = el.getAttribute(field.getName());
+				String value = element.getAttribute(field.getName());
 				if (!value.isEmpty()) Utils.setField(field, this, value);
-				else if (annotation.Required()) throw new AttributeNotFoundException(el, field.getName());
+				else if (annotation.Required()) throw new AttributeNotFoundException(element, field.getName());
 			}
 			catch (Exception e) {
 				throw new AnnotationParsingException(e);

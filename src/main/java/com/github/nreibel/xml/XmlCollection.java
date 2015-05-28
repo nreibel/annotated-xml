@@ -1,7 +1,6 @@
 package com.github.nreibel.xml;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
@@ -10,48 +9,44 @@ import org.w3c.dom.NodeList;
 import com.github.nreibel.xml.exceptions.AnnotationParsingException;
 import com.github.nreibel.xml.exceptions.AttributeNotFoundException;
 import com.github.nreibel.xml.exceptions.NodeNotFoundException;
-import com.github.nreibel.xml.utils.FilteringIterator;
-import com.github.nreibel.xml.utils.FilteringIterator.Filter;
 
-public class XmlCollection extends AnnotatedXmlItem {
+public class XmlCollection<T extends AnnotatedXmlItem> extends AnnotatedXmlItem {
 
-	private String nodeName;
-	private final Collection<XmlLeaf> children = new LinkedList<>();
+	private final Collection<T> children = new LinkedList<>();
+	private final Class<? extends IXmlItemFactory<T>> factoryClass;
 
-	private XmlCollection(IXmlItem parent) {
-		super(parent);
+	public XmlCollection(Class<? extends IXmlItemFactory<T>> factory, Element el, IXmlItem parent) {
+		super(el, parent);
+		this.factoryClass = factory;
 	}
 
 	@Override
-	public void doInitFields(Element el) throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
+	public void doInitFields() throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
 
-		nodeName = el.getNodeName();
+		IXmlItemFactory<T> factory = null;
 
-		NodeList nl = el.getElementsByTagName("*");
-		
+		try {
+			factory = factoryClass.newInstance();
+		} catch (Exception e) {
+			throw new AnnotationParsingException(e);
+		}
+
+		NodeList nl = this.getElement().getElementsByTagName("*");
+
 		for (int i = 0 ; i < nl.getLength() ; i++) {
 			Element child = (Element) nl.item(i);
-			XmlLeaf leaf = new XmlLeaf(this);
-			leaf.doInitFields(child);
+			T leaf = factory.createItem(child, this);
+			leaf.doInitFields();
 			children.add(leaf);
 		}
 	}
 
 	@Override
-	public Collection<? extends IXmlItem> getChildren() {
+	public Collection<T> getChildren() {
 		return children;
 	}
 
-	@Override
-	public String getNodeName() {
-		return nodeName;
-	}
-
-	@Override
-	public Collection<? extends IXmlAttribute> getAttributes() {
-		return Collections.emptyList();
-	}
-
+	/*
 	public Iterable<XmlLeaf> getChildrenByTag(final String tag) {
 		Filter<XmlLeaf> filter = new Filter<XmlLeaf>() {
 			@Override public boolean matches(XmlLeaf obj) {
@@ -62,11 +57,12 @@ public class XmlCollection extends AnnotatedXmlItem {
 		return new FilteringIterator<XmlLeaf>(children.iterator(), filter);
 	}
 
-	public static class FactoryImpl implements Descriptor<XmlCollection> {
+	public static abstract class Factory<T extends AnnotatedXmlItem, F extends Descriptor<T>> implements Descriptor<XmlCollection<T, F>> {
 
 		@Override
-		public XmlCollection createItem(IXmlItem parent) {
-			return new XmlCollection(parent);
+		public XmlCollection<T, F> createItem(Element el, IXmlItem parent) {
+			return new XmlCollection<T, F>(el, parent);
 		}
 	}
+	 */
 }

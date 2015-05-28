@@ -1,10 +1,14 @@
-package com.github.nreibel.xml;
+package com.github.nreibel.xml.impl;
 
 import java.util.Collection;
 import java.util.Collections;
 
 import org.w3c.dom.Element;
 
+import com.github.nreibel.xml.AnnotatedXmlItem;
+import com.github.nreibel.xml.IXmlItemFactory;
+import com.github.nreibel.xml.IXmlAttribute;
+import com.github.nreibel.xml.IXmlItem;
 import com.github.nreibel.xml.exceptions.AnnotationParsingException;
 import com.github.nreibel.xml.exceptions.AttributeNotFoundException;
 import com.github.nreibel.xml.exceptions.NodeNotFoundException;
@@ -12,26 +16,19 @@ import com.github.nreibel.xml.exceptions.NodeNotFoundException;
 
 public class XmlLeaf extends AnnotatedXmlItem {
 
-	private String nodeName;
 	private String value = null;
 
-	public XmlLeaf(IXmlItem parent) {
-		super(parent);
+	public XmlLeaf(Element el, IXmlItem parent) {
+		super(el, parent);
 	}
 	
 	@Override
-	public void doInitFields(Element el) throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
-		value = el.getTextContent();
-		nodeName = el.getNodeName();
+	public void doInitFields() throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
+		value = this.getElement().getTextContent();
 	}
 
 	public String getTextContent() {
 		return value;
-	}
-
-	@Override
-	public String getNodeName() {
-		return nodeName;
 	}
 	
 	@Override
@@ -46,21 +43,21 @@ public class XmlLeaf extends AnnotatedXmlItem {
 
 	@Override
 	public Element toElement() {
-		Element el = this.getDocument().createElement(nodeName);
+		Element el = super.toElement();
 		el.setTextContent(value);
 		return el;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("<%s>%s</%s>", nodeName, value, nodeName);
+		return String.format("<%s>%s</%s>", this.getNodeName(), value, this.getNodeName());
 	}
 
-	public static class FactoryImpl implements Descriptor<XmlLeaf> {
+	public static class Factory implements IXmlItemFactory<XmlLeaf> {
 
 		@Override
-		public XmlLeaf createItem(IXmlItem parent) {
-			return new XmlLeaf(parent);
+		public XmlLeaf createItem(Element el, IXmlItem parent) {
+			return new XmlLeaf(el, parent);
 		}
 	}
 }

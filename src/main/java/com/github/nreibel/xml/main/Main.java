@@ -1,3 +1,5 @@
+package com.github.nreibel.xml.main;
+
 import java.io.File;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,7 +14,7 @@ public class Main {
 
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(f);
 		XmlRoot root = new XmlRoot(doc);
-		root.doInitFields(doc.getDocumentElement());
+		root.doInitFields();
 
 		System.out.println(root);
 	}

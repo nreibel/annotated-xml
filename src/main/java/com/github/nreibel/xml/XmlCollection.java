@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 import com.github.nreibel.xml.exceptions.AnnotatedXmlException;
 import com.github.nreibel.xml.exceptions.AnnotationParsingException;
@@ -23,7 +23,7 @@ public class XmlCollection<T extends AnnotatedXmlItem> extends AnnotatedXmlItem 
 	public Collection<T> getChildren() {
 		return children;
 	}
-	
+
 	@Override
 	public void doInitFields() throws AnnotatedXmlException {
 
@@ -35,13 +35,14 @@ public class XmlCollection<T extends AnnotatedXmlItem> extends AnnotatedXmlItem 
 			throw new AnnotationParsingException(e);
 		}
 
-		NodeList nl = this.getElement().getElementsByTagName("*");
-
-		for (int i = 0 ; i < nl.getLength() ; i++) {
-			Element child = (Element) nl.item(i);
-			T leaf = factory.createItem(child, this);
-			leaf.doInitFields();
-			children.add(leaf);
+		Node childNode = this.getElement().getFirstChild();
+		while(childNode != null) {
+			if (childNode instanceof Element) {
+				T leaf = factory.createItem((Element) childNode, this);
+				leaf.doInitFields();
+				children.add(leaf);
+			}
+			childNode = childNode.getNextSibling();
 		}
 	}
 }

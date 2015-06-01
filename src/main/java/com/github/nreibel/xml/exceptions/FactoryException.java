@@ -1,6 +1,6 @@
 package com.github.nreibel.xml.exceptions;
 
-public class FactoryException extends Exception {
+public class FactoryException extends AnnotatedXmlException {
 
 	private static final long serialVersionUID = -7977862495654041744L;
 
@@ -11,6 +11,4 @@ public class FactoryException extends Exception {
 	public FactoryException(String message) {
 		super(message);
 	}
-	
-
 }

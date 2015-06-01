@@ -2,12 +2,11 @@
   <leaf>My value</leaf>
   <child name="child1" />
   
-  <collection>
+  <leafCollection>
     <item>value1</item>
     <item>value2</item>
     <item>value3</item>
-    <type2>value3</type2>
-  </collection>
+  </leafCollection>
   
   <childCollection>
     <child name="child1" />

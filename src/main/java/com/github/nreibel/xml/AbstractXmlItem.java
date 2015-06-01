@@ -66,23 +66,15 @@ public abstract class AbstractXmlItem implements IXmlItem {
 	public String toString() {
 
 		if (this.getChildren().isEmpty()) {
-			if (this.getAttributes().isEmpty()) {
-				return String.format("<%s/>", this.getNodeName());
-			}
-			else {
-				return String.format("<%s %s/>", this.getNodeName(), this.getAttributesString());
-			}
+			if (this.getAttributes().isEmpty()) return String.format("<%s/>", this.getNodeName());
+			else return String.format("<%s %s/>", this.getNodeName(), this.getAttributesString());
 		}
 		else {
 			String head = null;
 			String foot = String.format("</%s>", this.getNodeName());
 
-			if (this.getAttributes().isEmpty()) {
-				head = String.format("<%s>\n", this.getNodeName());
-			}
-			else {
-				head = String.format("<%s %s>\n", this.getNodeName(), this.getAttributesString());
-			}
+			if (this.getAttributes().isEmpty()) head = String.format("<%s>\n", this.getNodeName());
+			else head = String.format("<%s %s>\n", this.getNodeName(), this.getAttributesString());
 
 			StringBuilder sb = new StringBuilder();
 

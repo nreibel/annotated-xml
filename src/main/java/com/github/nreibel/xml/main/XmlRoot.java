@@ -28,7 +28,7 @@ public class XmlRoot extends AnnotatedXmlItem {
 	private XmlLeaf leaf;
 
 	@XmlChild(Factory=LeafCollectionFactory.class)
-	private XmlCollection<XmlLeaf> collection;
+	private XmlCollection<XmlLeaf> leafCollection;
 
 	@XmlChild(Factory=ChildCollectionFactory.class)
 	private XmlCollection<Child> childCollection;
@@ -36,22 +36,6 @@ public class XmlRoot extends AnnotatedXmlItem {
 	public XmlRoot(Document doc) {
 		super(doc.getDocumentElement(), null);
 		xmlDoc = doc;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public IXmlItem getChild() {
-		return child;
-	}
-
-	public String getLeaf() {
-		return leaf.getTextContent();
-	}
-
-	public XmlCollection<XmlLeaf> getCollection() {
-		return collection;
 	}
 
 	@Override

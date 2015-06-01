@@ -8,7 +8,7 @@ import org.w3c.dom.Node;
 import com.github.nreibel.xml.utils.NodeHierarchyIterator;
 import com.github.nreibel.xml.utils.Utils;
 
-public class AttributeNotFoundException extends Exception {
+public class AttributeNotFoundException extends AnnotatedXmlException {
 
 	private static final long serialVersionUID = 886717166013093573L;
 

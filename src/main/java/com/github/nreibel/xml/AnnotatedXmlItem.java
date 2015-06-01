@@ -3,7 +3,6 @@ package com.github.nreibel.xml;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -11,6 +10,7 @@ import org.w3c.dom.Element;
 
 import com.github.nreibel.xml.annotations.XmlAttribute;
 import com.github.nreibel.xml.annotations.XmlChild;
+import com.github.nreibel.xml.exceptions.AnnotatedXmlException;
 import com.github.nreibel.xml.exceptions.AnnotationParsingException;
 import com.github.nreibel.xml.exceptions.AttributeNotFoundException;
 import com.github.nreibel.xml.exceptions.NodeNotFoundException;
@@ -20,13 +20,16 @@ import com.github.nreibel.xml.utils.Utils;
 public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 
 	private final Element element;
-	
+
+	private final Collection<IXmlItem> children = new LinkedList<>();
+	private final Collection<IXmlAttribute> attributes = new LinkedList<>();
+
 	public AnnotatedXmlItem(Element el, IXmlItem parent) {
 		super(parent);
 		element = el;
 	}
-	
-	public final Element getElement() {
+
+	protected final Element getElement() {
 		return element;
 	}
 
@@ -35,11 +38,21 @@ public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 		return element.getNodeName();
 	}
 
-	public void doInitFields() throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
-		
+	@Override
+	public Collection<? extends IXmlItem> getChildren() {
+		return children;
+	}
+
+	@Override
+	public Collection<? extends IXmlAttribute> getAttributes() {
+		return attributes;
+	}
+
+	public void doInitFields() throws AnnotatedXmlException {
+
 		// Init child nodes
-		Map<Field, XmlChild> children = Utils.getFieldsWithAnnotation(this.getClass(), XmlChild.class);
-		for(Entry<Field, XmlChild> entry : children.entrySet()) {
+		Map<Field, XmlChild> mapChildren = Utils.getFieldsWithAnnotation(this.getClass(), XmlChild.class);
+		for(Entry<Field, XmlChild> entry : mapChildren.entrySet()) {
 
 			Field field = entry.getKey();
 			XmlChild annotation = entry.getValue();
@@ -50,26 +63,28 @@ public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 				AnnotatedXmlItem it = desc.createItem(childNode, this);
 				it.doInitFields();
 				Utils.setField(field, this, it);
+				children.add(it);
 			}
-			catch (NodeNotFoundException e) {
-				if (annotation.Required()) throw e;
-			}
-			catch(Exception e) {
-				throw new AnnotationParsingException(e);
-			}
+			catch (NodeNotFoundException e) { if (annotation.Required()) throw e; }
+			catch(Exception e) { throw new AnnotationParsingException(e); }
 		}
 
 		// Init attributes
-		Map<Field, XmlAttribute> attributes = Utils.getFieldsWithAnnotation(this.getClass(), XmlAttribute.class);
-		for(Entry<Field, XmlAttribute> entry : attributes.entrySet()) {
+		Map<Field, XmlAttribute> mapAttributes = Utils.getFieldsWithAnnotation(this.getClass(), XmlAttribute.class);
+		for(Entry<Field, XmlAttribute> entry : mapAttributes.entrySet()) {
 
 			Field field = entry.getKey();
 			XmlAttribute annotation = entry.getValue();
 
 			try {
 				String value = element.getAttribute(field.getName());
+
 				if (!value.isEmpty()) Utils.setField(field, this, value);
 				else if (annotation.Required()) throw new AttributeNotFoundException(element, field.getName());
+				else value = Utils.getField(field, this).toString();
+
+				IXmlAttribute attr = new DefaultXmlAttribute(field.getName(), value);
+				attributes.add(attr);
 			}
 			catch (Exception e) {
 				throw new AnnotationParsingException(e);
@@ -77,42 +92,4 @@ public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 		}
 	}
 
-	@Override
-	public Collection<? extends IXmlItem> getChildren() {
-		List<IXmlItem> list = new LinkedList<>();
-
-		Map<Field, XmlChild> leafs = Utils.getFieldsWithAnnotation(this.getClass(), XmlChild.class);
-		for(Field field : leafs.keySet()) {
-
-			try {
-				IXmlItem item = (IXmlItem) Utils.getField(field, this);
-				if (item != null) list.add(item);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return list;
-	}
-
-	@Override
-	public Collection<? extends IXmlAttribute> getAttributes() {
-		List<IXmlAttribute> list = new LinkedList<>();
-
-		Map<Field, XmlAttribute> leafs = Utils.getFieldsWithAnnotation(this.getClass(), XmlAttribute.class);
-		for(Field field : leafs.keySet()) {
-
-			try {
-				String value = Utils.getField(field, this).toString();
-				DefaultXmlAttribute item = new DefaultXmlAttribute(field.getName(), value);
-				list.add(item);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		return list;
-	}
 }

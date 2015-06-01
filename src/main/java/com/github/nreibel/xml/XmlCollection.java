@@ -6,9 +6,8 @@ import java.util.LinkedList;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.github.nreibel.xml.exceptions.AnnotatedXmlException;
 import com.github.nreibel.xml.exceptions.AnnotationParsingException;
-import com.github.nreibel.xml.exceptions.AttributeNotFoundException;
-import com.github.nreibel.xml.exceptions.NodeNotFoundException;
 
 public class XmlCollection<T extends AnnotatedXmlItem> extends AnnotatedXmlItem {
 
@@ -21,7 +20,12 @@ public class XmlCollection<T extends AnnotatedXmlItem> extends AnnotatedXmlItem 
 	}
 
 	@Override
-	public void doInitFields() throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
+	public Collection<T> getChildren() {
+		return children;
+	}
+	
+	@Override
+	public void doInitFields() throws AnnotatedXmlException {
 
 		IXmlItemFactory<T> factory = null;
 
@@ -40,29 +44,4 @@ public class XmlCollection<T extends AnnotatedXmlItem> extends AnnotatedXmlItem 
 			children.add(leaf);
 		}
 	}
-
-	@Override
-	public Collection<T> getChildren() {
-		return children;
-	}
-
-	/*
-	public Iterable<XmlLeaf> getChildrenByTag(final String tag) {
-		Filter<XmlLeaf> filter = new Filter<XmlLeaf>() {
-			@Override public boolean matches(XmlLeaf obj) {
-				return obj.getNodeName().equals(tag);
-			}
-		};
-
-		return new FilteringIterator<XmlLeaf>(children.iterator(), filter);
-	}
-
-	public static abstract class Factory<T extends AnnotatedXmlItem, F extends Descriptor<T>> implements Descriptor<XmlCollection<T, F>> {
-
-		@Override
-		public XmlCollection<T, F> createItem(Element el, IXmlItem parent) {
-			return new XmlCollection<T, F>(el, parent);
-		}
-	}
-	 */
 }

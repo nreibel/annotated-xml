@@ -7,7 +7,7 @@ import org.w3c.dom.Node;
 import com.github.nreibel.xml.utils.NodeHierarchyIterator;
 import com.github.nreibel.xml.utils.Utils;
 
-public class NodeNotFoundException extends Exception {
+public class NodeNotFoundException extends AnnotatedXmlException {
 
 	private static final long serialVersionUID = -3971178251457187612L;
 

@@ -16,19 +16,17 @@ import com.github.nreibel.xml.exceptions.NodeNotFoundException;
 
 public class XmlLeaf extends AnnotatedXmlItem {
 
-	private String value = null;
-
 	public XmlLeaf(Element el, IXmlItem parent) {
 		super(el, parent);
 	}
 	
 	@Override
 	public void doInitFields() throws AttributeNotFoundException, AnnotationParsingException, NodeNotFoundException {
-		value = this.getElement().getTextContent();
+		/* Nothing to do */
 	}
 
 	public String getTextContent() {
-		return value;
+		return this.getElement().getTextContent();
 	}
 	
 	@Override
@@ -44,13 +42,14 @@ public class XmlLeaf extends AnnotatedXmlItem {
 	@Override
 	public Element toElement() {
 		Element el = super.toElement();
+		String value = this.getTextContent();
 		el.setTextContent(value);
 		return el;
 	}
 
 	@Override
 	public String toString() {
-		return String.format("<%s>%s</%s>", this.getNodeName(), value, this.getNodeName());
+		return String.format("<%s>%s</%s>", this.getNodeName(), this.getTextContent(), this.getNodeName());
 	}
 
 	public static class Factory implements IXmlItemFactory<XmlLeaf> {

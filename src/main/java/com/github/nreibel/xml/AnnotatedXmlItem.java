@@ -77,13 +77,13 @@ public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 			XmlAttribute annotation = entry.getValue();
 
 			try {
-				String value = element.getAttribute(field.getName());
+				Object value = element.getAttribute(field.getName());
 
-				if (!value.isEmpty()) Utils.setField(field, this, value);
+				if (value != null) Utils.setField(field, this, value.toString());
 				else if (annotation.Required()) throw new AttributeNotFoundException(element, field.getName());
-				else value = Utils.getField(field, this).toString();
-
-				IXmlAttribute attr = new DefaultXmlAttribute(field.getName(), value);
+				else value = "";
+				
+				IXmlAttribute attr = new DefaultXmlAttribute(field.getName(), value.toString());
 				attributes.add(attr);
 			}
 			catch (Exception e) {

@@ -8,5 +8,24 @@
   <artifactId>annotated-xml</artifactId>
   <version>1.0.0</version>
   <packaging>jar</packaging>
+  <url>https://github.com/nreibel/annotated-xml</url>
+
+  <parent>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>17</version>
+  </parent>
   
+  <developers>
+    <developer>
+      <id>nreibel</id>
+      <name>Nicolas Reibel</name>
+      <email>nicolas.reibel@gmail.com</email>
+    </developer>
+  </developers>
+  
+  <scm>
+    <url>https://github.com/nreibel/annotated-xml</url>
+  </scm>
+
 </project>

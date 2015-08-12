@@ -19,9 +19,8 @@ import com.github.nreibel.xml.utils.Utils;
 
 public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 
-	private final Element element;
-
-	private final Collection<IXmlItem> children = new LinkedList<>();
+	private final Element                   element;
+	private final Collection<IXmlItem>      children   = new LinkedList<>();
 	private final Collection<IXmlAttribute> attributes = new LinkedList<>();
 
 	public AnnotatedXmlItem(Element el, IXmlItem parent) {
@@ -66,7 +65,7 @@ public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 				children.add(it);
 			}
 			catch (NodeNotFoundException e) { if (annotation.Required()) throw e; }
-			catch(Exception e) { throw new AnnotationParsingException(e); }
+			catch(IllegalAccessException | InstantiationException e) { throw new AnnotationParsingException(e); }
 		}
 
 		// Init attributes
@@ -76,20 +75,18 @@ public abstract class AnnotatedXmlItem extends AbstractXmlItem {
 			Field field = entry.getKey();
 			XmlAttribute annotation = entry.getValue();
 
-			try {
-				Object value = element.getAttribute(field.getName());
-
-				if (value != null) Utils.setField(field, this, value.toString());
-				else if (annotation.Required()) throw new AttributeNotFoundException(element, field.getName());
-				else value = "";
-				
-				IXmlAttribute attr = new DefaultXmlAttribute(field.getName(), value.toString());
-				attributes.add(attr);
+			if ( element.hasAttribute(field.getName()) ) {
+				try {
+					Object value = element.getAttribute(field.getName());
+					Utils.setField(field, this, value.toString());
+					IXmlAttribute attr = new DefaultXmlAttribute(field.getName(), value.toString());
+					attributes.add(attr);
+				}
+				catch (Exception e) {
+					throw new AnnotationParsingException(e);
+				}
 			}
-			catch (Exception e) {
-				throw new AnnotationParsingException(e);
-			}
+			else if (annotation.Required()) throw new AttributeNotFoundException(element, field.getName());
 		}
 	}
-
 }

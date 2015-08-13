@@ -42,27 +42,18 @@ public class Utils {
 
 
 	public static String join(Collection<String> strings, String separator) {
-		String[] array = new String[strings.size()];
-		return Utils.join(strings.toArray(array), separator);
-	}
 
-	public static String join(String[] strings, String separator) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0 ; i < strings.length - 1 ; i++) {
-			sb.append(strings[i]);
+		StringBuilder sb    = new StringBuilder();
+		String[]      array = new String[strings.size()];
+		
+		array = strings.toArray(array);
+		
+		for (int i = 0 ; i < array.length - 1 ; i++) {
+			sb.append(array[i]);
 			sb.append(separator);
 		}
-		sb.append(strings[strings.length-1]);
+		sb.append(array[array.length-1]);
 		return sb.toString();
-	}
-
-	public static String getElementValueOrDie(Element el, String tagName) throws NodeNotFoundException {
-		try {
-			return getFirstElementOrDie(el, tagName).getTextContent();
-		}
-		catch(Exception ex) {
-			throw new NodeNotFoundException(el, tagName);
-		}
 	}
 
 	public static Element getFirstElementOrDie(Element el, String tagName) throws NodeNotFoundException {

@@ -1,45 +1,47 @@
 package com.github.nreibel.xml.main;
 
-import org.w3c.dom.Document;
+import java.util.Collection;
 
-import com.github.nreibel.xml.AnnotatedXmlItem;
-import com.github.nreibel.xml.IXmlItem;
-import com.github.nreibel.xml.XmlCollection;
+import com.github.nreibel.xml.AnnotatedXmlLeaf;
+import com.github.nreibel.xml.AnnotatedXmlNode;
 import com.github.nreibel.xml.annotations.XmlAttribute;
 import com.github.nreibel.xml.annotations.XmlChild;
-import com.github.nreibel.xml.impl.LeafCollectionFactory;
-import com.github.nreibel.xml.impl.XmlLeaf;
 
 
-public class XmlRoot extends AnnotatedXmlItem {
+public class XmlRoot extends AnnotatedXmlNode {
 
-	private final Document xmlDoc;
-
-	@XmlAttribute
+	@XmlAttribute(Required=true)
 	private String version = "default";
 
-	@XmlAttribute
+	@XmlAttribute(Required=false)
 	private String name = "defaultName";
 
-	@XmlChild(Factory=Child.Factory.class)
-	private IXmlItem child;
+	@XmlChild(Class=Child.class)
+	private Child child = null;
 
-	@XmlChild(Factory=XmlLeaf.Factory.class)
-	private XmlLeaf leaf;
+	@XmlChild(Class=Items.class)
+	private Items items = null;
+	
+	@XmlChild(Class=AnnotatedXmlLeaf.class)
+	private AnnotatedXmlLeaf leaf = null;
 
-	@XmlChild(Factory=LeafCollectionFactory.class)
-	private XmlCollection<XmlLeaf> leafCollection;
-
-	@XmlChild(Factory=ChildCollectionFactory.class)
-	private XmlCollection<Child> childCollection;
-
-	public XmlRoot(Document doc) {
-		super(doc.getDocumentElement(), null);
-		xmlDoc = doc;
+	public String getVersion() {
+		return version;
 	}
 
-	@Override
-	public Document getDocument() {
-		return xmlDoc;
+	public String getName() {
+		return name;
+	}
+
+	public Child getChild() {
+		return child;
+	}
+
+	public Collection<Child> getItems() {
+		return items.getChildren();
+	}
+	
+	public String getLeaf() {
+		return leaf.getText();
 	}
 }

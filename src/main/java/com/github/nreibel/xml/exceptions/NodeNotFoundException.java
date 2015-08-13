@@ -22,7 +22,7 @@ public class NodeNotFoundException extends AnnotatedXmlException {
 	@Override
 	public String getMessage() {
 
-		LinkedList<String> parts = new LinkedList<>();
+		LinkedList<String> parts = new LinkedList<String>();
 		for(Node n : new NodeHierarchyIterator(el)) {
 			parts.addFirst(n.getNodeName());
 		}

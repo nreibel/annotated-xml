@@ -10,7 +10,7 @@ import com.github.nreibel.xml.exceptions.AnnotatedXmlException;
 
 public abstract class AnnotatedXmlCollection<T extends IAnnotatedXmlItem> implements IAnnotatedXmlItem {
 
-	private final Collection<T> children = new LinkedList<>();
+	private final Collection<T> children = new LinkedList<T>();
 
 	abstract protected Class<T> getChildClass();
 	abstract protected String getChildNodeName();
@@ -29,7 +29,10 @@ public abstract class AnnotatedXmlCollection<T extends IAnnotatedXmlItem> implem
 				leaf.doInitFields(childNode);
 				children.add(leaf);
 			}
-			catch (InstantiationException | IllegalAccessException e) {
+			catch (InstantiationException e) {
+				throw new AnnotatedXmlException("Can't create object of class " + clazz, e);
+			}
+			catch (IllegalAccessException e) {
 				throw new AnnotatedXmlException("Can't create object of class " + clazz, e);
 			}
 		}

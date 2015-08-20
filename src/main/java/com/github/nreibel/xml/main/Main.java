@@ -31,10 +31,9 @@ public class Main {
 
 		System.out.println(xml.getVersion());
 		System.out.println(xml.getName());
-		System.out.println(xml.getChild().getName());
 		System.out.println(xml.getLeaf());
-		for (Child c : xml.getItems() ) {
-			System.out.println(c.getName());
-		}
+		System.out.println(xml.getIllegalNode());
+		System.out.println(xml.getChildren());
+		System.out.println(xml.getNode().getChildren());
 	}
 }

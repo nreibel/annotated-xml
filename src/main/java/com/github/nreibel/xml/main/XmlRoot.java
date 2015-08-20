@@ -2,10 +2,11 @@ package com.github.nreibel.xml.main;
 
 import java.util.Collection;
 
-import com.github.nreibel.xml.AnnotatedXmlLeaf;
 import com.github.nreibel.xml.AnnotatedXmlNode;
 import com.github.nreibel.xml.annotations.XmlAttribute;
 import com.github.nreibel.xml.annotations.XmlChild;
+import com.github.nreibel.xml.annotations.XmlCollection;
+import com.github.nreibel.xml.annotations.XmlLeaf;
 
 
 public class XmlRoot extends AnnotatedXmlNode {
@@ -13,18 +14,21 @@ public class XmlRoot extends AnnotatedXmlNode {
 	@XmlAttribute(Required=true)
 	private String version = "default";
 
-	@XmlAttribute(Required=false)
+	@XmlAttribute
 	private String name = "defaultName";
 
-	@XmlChild(Class=Child.class)
-	private Child child = null;
+	@XmlLeaf
+	private String leaf = "default";
 
-	@XmlChild(Class=Items.class)
-	private Items items = null;
+	@XmlLeaf(NodeName="ILLEGAL-JAVA-NAME")
+	private String illegalNode = "default";
+
+	@XmlCollection(Class=Child.class, NodeName="child")
+	private Collection<Child> children;
 	
-	@XmlChild(Class=AnnotatedXmlLeaf.class)
-	private AnnotatedXmlLeaf leaf = null;
-
+	@XmlChild(Class=Node.class)
+	private Node node;
+	
 	public String getVersion() {
 		return version;
 	}
@@ -33,15 +37,19 @@ public class XmlRoot extends AnnotatedXmlNode {
 		return name;
 	}
 
-	public Child getChild() {
-		return child;
+	public Collection<Child> getChildren() {
+		return children;
 	}
 
-	public Collection<Child> getItems() {
-		return items.getChildren();
-	}
-	
 	public String getLeaf() {
-		return leaf.getText();
+		return leaf;
+	}
+
+	public Node getNode() {
+		return node;
+	}
+
+	public String getIllegalNode() {
+		return illegalNode;
 	}
 }

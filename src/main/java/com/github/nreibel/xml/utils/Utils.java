@@ -56,10 +56,12 @@ public class Utils {
 		return sb.toString();
 	}
 
-	public static Element getFirstElementOrDie(Element el, String tagName) throws NodeNotFoundException {
-		Node ret = null;
-		ret = el.getElementsByTagName(tagName).item(0);
-		if (ret == null) throw new NodeNotFoundException(el, tagName);
-		return Element.class.cast(ret);
+	public static Element getFirstElementOrDie(Element element, String nodeName) throws NodeNotFoundException {
+		Node n = element.getFirstChild();
+		while(n != null) {
+			if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(nodeName)) return (Element) n;
+			n = n.getNextSibling();
+		}
+		throw new NodeNotFoundException(element, nodeName);
 	}
 }

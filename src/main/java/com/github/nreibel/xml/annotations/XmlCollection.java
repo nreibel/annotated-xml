@@ -9,11 +9,9 @@ import com.github.nreibel.xml.AnnotatedXmlNode;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface XmlChild {
-
-	boolean Required() default false;
-
-	String NodeName() default "";
+public @interface XmlCollection {
 
 	Class<? extends AnnotatedXmlNode> Class();
+
+	String NodeName() default "";
 }

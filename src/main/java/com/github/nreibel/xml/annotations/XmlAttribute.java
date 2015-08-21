@@ -11,4 +11,5 @@ public @interface XmlAttribute {
 
 	boolean Required() default false;
 
+	String Name() default "";
 }

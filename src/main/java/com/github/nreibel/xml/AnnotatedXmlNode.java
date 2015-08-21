@@ -20,13 +20,20 @@ import com.github.nreibel.xml.utils.Utils;
 
 public class AnnotatedXmlNode {
 
+	public void doInitFields(Element element) throws AnnotatedXmlException {
+		doInitLeaves(element);
+		doInitAttributes(element);
+		doInitChildren(element);
+		doInitCollections(element);
+	}
+	
 	private final void doInitLeaves(Element element) throws AnnotatedXmlException {
 		Map<Field, XmlLeaf> map = Utils.getFieldsWithAnnotation(this.getClass(), XmlLeaf.class);
 		for(Entry<Field, XmlLeaf> entry : map.entrySet()) {
 
 			Field   field      = entry.getKey();
 			XmlLeaf annotation = entry.getValue();
-
+			
 			String nodeName = annotation.NodeName();
 			if (nodeName.isEmpty()) nodeName = field.getName();
 
@@ -50,17 +57,20 @@ public class AnnotatedXmlNode {
 			Field        field      = entry.getKey();
 			XmlAttribute annotation = entry.getValue();
 
-			if (element.hasAttribute(field.getName())) {
+			String attrName = annotation.Name();
+			if (attrName.isEmpty()) attrName = field.getName();
+
+			if (element.hasAttribute(attrName)) {
 				try {
-					Object value = element.getAttribute(field.getName());
-					Utils.setField(field, this, value.toString());
+					String value = element.getAttribute(attrName);
+					Utils.setField(field, this, value);
 				}
 				catch (Exception e) {
 					throw new AnnotatedXmlException(e);
 				}
 			}
 			else if (annotation.Required()) {
-				throw new AttributeNotFoundException(element, field.getName());
+				throw new AttributeNotFoundException(element, attrName);
 			}
 		}
 	}
@@ -126,12 +136,5 @@ public class AnnotatedXmlNode {
 				throw new AnnotatedXmlException(e);
 			}
 		}
-	}
-
-	public void doInitFields(Element element) throws AnnotatedXmlException {
-		doInitLeaves(element);
-		doInitAttributes(element);
-		doInitChildren(element);
-		doInitCollections(element);
 	}
 }

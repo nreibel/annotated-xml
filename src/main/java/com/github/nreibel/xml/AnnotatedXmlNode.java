@@ -22,18 +22,30 @@ import com.github.nreibel.xml.utils.Utils;
 
 public class AnnotatedXmlNode {
 
-	private Element el = null;
+	private String textContent = null;
 
 	public String getTextContent() {
-		return el.getTextContent();
+		return textContent;
 	}
 
 	public void doInitFields(Element element) throws AnnotatedXmlException {
-		this.el = element;
+		doInitTextContent(element);
 		doInitLeaves(element);
 		doInitAttributes(element);
 		doInitChildren(element);
 		doInitCollections(element);
+	}
+
+	private void doInitTextContent(Element element) {
+		StringBuilder sb = new StringBuilder();
+		
+		Node node = element.getFirstChild();
+		while(node != null) {
+			if (node.getNodeType() == Node.TEXT_NODE) sb.append(node.getTextContent());
+			node = node.getNextSibling();
+		}
+		
+		textContent = sb.toString();
 	}
 
 	private final void doInitLeaves(Element element) throws AnnotatedXmlException {

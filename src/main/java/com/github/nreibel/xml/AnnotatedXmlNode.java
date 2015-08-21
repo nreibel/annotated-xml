@@ -1,6 +1,8 @@
 package com.github.nreibel.xml;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +23,11 @@ import com.github.nreibel.xml.utils.Utils;
 public class AnnotatedXmlNode {
 
 	private Element el = null;
-	
+
 	public String getTextContent() {
 		return el.getTextContent();
 	}
-	
+
 	public void doInitFields(Element element) throws AnnotatedXmlException {
 		this.el = element;
 		doInitLeaves(element);
@@ -33,14 +35,14 @@ public class AnnotatedXmlNode {
 		doInitChildren(element);
 		doInitCollections(element);
 	}
-	
+
 	private final void doInitLeaves(Element element) throws AnnotatedXmlException {
 		Map<Field, XmlLeaf> map = Utils.getFieldsWithAnnotation(this.getClass(), XmlLeaf.class);
 		for(Entry<Field, XmlLeaf> entry : map.entrySet()) {
 
 			Field   field      = entry.getKey();
 			XmlLeaf annotation = entry.getValue();
-			
+
 			String nodeName = annotation.NodeName();
 			if (nodeName.isEmpty()) nodeName = field.getName();
 
@@ -137,7 +139,8 @@ public class AnnotatedXmlNode {
 			}
 
 			try {
-				Utils.setField(field, this, list);
+				List<AnnotatedXmlNode> finalList = Collections.unmodifiableList(new ArrayList<>(list));
+				Utils.setField(field, this, finalList);
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) {
 				throw new AnnotatedXmlException(e);

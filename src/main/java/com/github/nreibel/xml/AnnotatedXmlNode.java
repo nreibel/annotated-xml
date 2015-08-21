@@ -20,7 +20,14 @@ import com.github.nreibel.xml.utils.Utils;
 
 public class AnnotatedXmlNode {
 
+	private Element el = null;
+	
+	public String getTextContent() {
+		return el.getTextContent();
+	}
+	
 	public void doInitFields(Element element) throws AnnotatedXmlException {
+		this.el = element;
 		doInitLeaves(element);
 		doInitAttributes(element);
 		doInitChildren(element);

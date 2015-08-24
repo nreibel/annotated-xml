@@ -29,6 +29,9 @@ public class XmlRoot extends AnnotatedXmlNode {
 	@XmlChild(Class=Node.class)
 	private Node node;
 	
+	@XmlChild(Class=Pair.class)
+	private Pair pair;
+	
 	public String getVersion() {
 		return version;
 	}
@@ -51,5 +54,9 @@ public class XmlRoot extends AnnotatedXmlNode {
 
 	public String getIllegalNode() {
 		return illegalNode;
+	}
+	
+	public Pair getPair() {
+		return pair;
 	}
 }

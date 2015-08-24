@@ -35,5 +35,7 @@ public class Main {
 		System.out.println(xml.getIllegalNode());
 		System.out.println(xml.getChildren());
 		System.out.println(xml.getNode().getChildren());
+		
+		System.out.println(xml.getPair().getKey() + " => " + xml.getPair().getValue());
 	}
 }

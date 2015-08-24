@@ -16,4 +16,6 @@
     <child name="childItem3" />
   </node>
   
+  <pair key="some key">some value</pair>
+  
 </root>

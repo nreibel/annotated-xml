@@ -15,6 +15,7 @@ import com.github.nreibel.xml.annotations.XmlAttribute;
 import com.github.nreibel.xml.annotations.XmlChild;
 import com.github.nreibel.xml.annotations.XmlCollection;
 import com.github.nreibel.xml.annotations.XmlLeaf;
+import com.github.nreibel.xml.annotations.XmlText;
 import com.github.nreibel.xml.exceptions.AnnotatedXmlException;
 import com.github.nreibel.xml.exceptions.AttributeNotFoundException;
 import com.github.nreibel.xml.exceptions.NodeNotFoundException;
@@ -22,30 +23,24 @@ import com.github.nreibel.xml.utils.Utils;
 
 public class AnnotatedXmlNode {
 
-	private String textContent = null;
-
-	public String getTextContent() {
-		return textContent;
-	}
-
 	public void doInitFields(Element element) throws AnnotatedXmlException {
-		doInitTextContent(element);
+		doInitText(element);
 		doInitLeaves(element);
 		doInitAttributes(element);
 		doInitChildren(element);
 		doInitCollections(element);
 	}
 
-	private void doInitTextContent(Element element) {
-		StringBuilder sb = new StringBuilder();
-		
-		Node node = element.getFirstChild();
-		while(node != null) {
-			if (node.getNodeType() == Node.TEXT_NODE) sb.append(node.getTextContent());
-			node = node.getNextSibling();
+	private final void doInitText(Element element) throws AnnotatedXmlException {
+		Map<Field, XmlText> map = Utils.getFieldsWithAnnotation(this.getClass(), XmlText.class);
+		for(Field field : map.keySet()) {
+			try {
+				Utils.setField(field, this, element.getTextContent());
+			}
+			catch(IllegalAccessException e) {
+				throw new AnnotatedXmlException(e);
+			}
 		}
-		
-		textContent = sb.toString();
 	}
 
 	private final void doInitLeaves(Element element) throws AnnotatedXmlException {

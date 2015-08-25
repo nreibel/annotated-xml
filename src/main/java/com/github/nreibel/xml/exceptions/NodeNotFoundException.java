@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import org.w3c.dom.Node;
 
 import com.github.nreibel.xml.utils.NodeHierarchyIterator;
-import com.github.nreibel.xml.utils.Utils;
 
 public class NodeNotFoundException extends AnnotatedXmlException {
 
@@ -27,7 +26,7 @@ public class NodeNotFoundException extends AnnotatedXmlException {
 			parts.addFirst(n.getNodeName());
 		}
 
-		String path = Utils.join(parts, " > ");
+		String path = join(parts, " > ");
 		String errorStr = String.format("Node '%s' not found in node '%s'", nodeName, path);
 		return errorStr;
 	}

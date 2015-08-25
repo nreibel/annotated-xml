@@ -2,7 +2,6 @@ package com.github.nreibel.xml.utils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +12,12 @@ import com.github.nreibel.xml.exceptions.NodeNotFoundException;
 
 public class Utils {
 
+	/**
+	 * Get all fields with a specifid annotation on them 
+	 * @param clazz Class to look into
+	 * @param annotationClass Annotation to search
+	 * @return A map of the field and their annotations
+	 */
 	public static <T extends Annotation> Map<Field, T> getFieldsWithAnnotation(Class<?> clazz, Class<T> annotationClass) {
 		Map<Field, T> map = new HashMap<>();
 
@@ -24,38 +29,28 @@ public class Utils {
 		return map;
 	}
 
-	public static void setField(Field f, Object instance, Object value) throws IllegalArgumentException, IllegalAccessException {
-		boolean accessible = f.isAccessible();
-		f.setAccessible(true);
-		f.set(instance, value);
-		f.setAccessible(accessible);
+	/**
+	 * Set a field of an instance to a specific value
+	 * @param field The field to set
+	 * @param instance The instance on which the field must be set
+	 * @param value The value to set
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	public static void setField(Field field, Object instance, Object value) throws IllegalArgumentException, IllegalAccessException {
+		boolean accessible = field.isAccessible();
+		field.setAccessible(true);
+		field.set(instance, value);
+		field.setAccessible(accessible);
 	}
 
-	public static Object getField(Field f, Object instance) throws IllegalArgumentException, IllegalAccessException {
-		boolean accessible = f.isAccessible();
-		f.setAccessible(true);
-		Object value = f.get(instance);
-		f.setAccessible(accessible);
-		
-		return value;
-	}
-
-
-	public static String join(Collection<String> strings, String separator) {
-
-		StringBuilder sb    = new StringBuilder();
-		String[]      array = new String[strings.size()];
-		
-		array = strings.toArray(array);
-		
-		for (int i = 0 ; i < array.length - 1 ; i++) {
-			sb.append(array[i]);
-			sb.append(separator);
-		}
-		sb.append(array[array.length-1]);
-		return sb.toString();
-	}
-
+	/**
+	 * Get the first <i>direct</i> child of an element with a given name
+	 * @param element Parent element
+	 * @param nodeName Tag name
+	 * @return The first direct child with this tag name
+	 * @throws NodeNotFoundException
+	 */
 	public static Element getFirstElementOrDie(Element element, String nodeName) throws NodeNotFoundException {
 		Node n = element.getFirstChild();
 		while(n != null) {

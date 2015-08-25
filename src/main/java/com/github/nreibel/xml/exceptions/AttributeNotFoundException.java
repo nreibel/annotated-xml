@@ -6,7 +6,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.github.nreibel.xml.utils.NodeHierarchyIterator;
-import com.github.nreibel.xml.utils.Utils;
 
 public class AttributeNotFoundException extends AnnotatedXmlException {
 
@@ -28,7 +27,7 @@ public class AttributeNotFoundException extends AnnotatedXmlException {
 			parts.addFirst(n.getNodeName());
 		}
 
-		String path = Utils.join(parts, " > ");
+		String path = join(parts, " > ");
 		String errorStr = String.format("Attribute '%s' not found in node '%s'", name, path);
 		return errorStr;
 	}

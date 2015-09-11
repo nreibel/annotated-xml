@@ -6,7 +6,7 @@
   <description>Library for reading and writing XML files through annotations</description>
   <groupId>com.github.nreibel</groupId>
   <artifactId>annotated-xml</artifactId>
-  <version>3.1.0</version>
+  <version>3.1.1</version>
   <packaging>jar</packaging>
   <url>https://github.com/nreibel/annotated-xml</url>
 

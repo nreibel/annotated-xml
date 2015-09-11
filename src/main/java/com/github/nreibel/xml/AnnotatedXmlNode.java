@@ -1,5 +1,9 @@
 package com.github.nreibel.xml;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,6 +28,21 @@ import com.github.nreibel.xml.exceptions.NodeNotFoundException;
 import com.github.nreibel.xml.utils.Utils;
 
 public class AnnotatedXmlNode {
+
+	public void tryLoad(File f) throws AnnotatedXmlException, FileNotFoundException {
+		InputStream is = new FileInputStream(f);
+		this.tryLoad(is);
+	}
+
+	public void tryLoad(InputStream stream) throws AnnotatedXmlException {
+		try {
+			Element root = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream).getDocumentElement();
+			this.doInitFields(root);
+		}
+		catch(Exception ex) {
+			throw new AnnotatedXmlException("Can't load XML data : " + ex.getMessage(), ex);
+		}
+	}
 
 	public void doInitFields(Element element) throws AnnotatedXmlException {
 		doInitText(element);

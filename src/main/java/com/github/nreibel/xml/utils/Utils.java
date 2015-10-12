@@ -21,9 +21,12 @@ public class Utils {
 	public static <T extends Annotation> Map<Field, T> getFieldsWithAnnotation(Class<?> clazz, Class<T> annotationClass) {
 		Map<Field, T> map = new HashMap<>();
 
-		for (Field field : clazz.getDeclaredFields()) {
-			T annotation = field.getAnnotation(annotationClass);
-			if (annotation != null) map.put(field, annotation);
+		while(clazz != null) {
+			for (Field field : clazz.getDeclaredFields()) {
+				T annotation = field.getAnnotation(annotationClass);
+				if (annotation != null) map.put(field, annotation);
+			}
+			clazz = clazz.getSuperclass();
 		}
 
 		return map;

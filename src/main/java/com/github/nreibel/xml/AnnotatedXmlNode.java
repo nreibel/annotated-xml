@@ -131,7 +131,10 @@ public class AnnotatedXmlNode {
 			catch (NodeNotFoundException e) {
 				if (annotation.Required()) throw e;
 			}
-			catch(IllegalAccessException | InstantiationException e) {
+			catch(IllegalAccessException e) {
+				throw new AnnotatedXmlException(e);
+			}
+			catch(InstantiationException e) {
 				throw new AnnotatedXmlException(e);
 			}
 		}
@@ -147,7 +150,7 @@ public class AnnotatedXmlNode {
 			String nodeName = annotation.NodeName();
 			if (nodeName.isEmpty()) nodeName = field.getName();
 
-			List<AnnotatedXmlNode> list = new LinkedList<>();
+			List<AnnotatedXmlNode> list = new LinkedList<AnnotatedXmlNode>();
 
 			Node node = element.getFirstChild();
 			while(node != null) {
@@ -158,7 +161,10 @@ public class AnnotatedXmlNode {
 						item.doInitFields(el);
 						list.add(item);
 					}
-					catch(InstantiationException | IllegalAccessException e) {
+					catch(InstantiationException e) {
+						throw new AnnotatedXmlException(e);
+					}
+					catch(IllegalAccessException e) {
 						throw new AnnotatedXmlException(e);
 					}
 				}
@@ -167,10 +173,13 @@ public class AnnotatedXmlNode {
 			}
 
 			try {
-				List<AnnotatedXmlNode> finalList = Collections.unmodifiableList(new ArrayList<>(list));
+				List<AnnotatedXmlNode> finalList = Collections.unmodifiableList(new ArrayList<AnnotatedXmlNode>(list));
 				Utils.setField(field, this, finalList);
 			}
-			catch (IllegalArgumentException | IllegalAccessException e) {
+			catch (IllegalAccessException e) {
+				throw new AnnotatedXmlException(e);
+			}
+			catch (IllegalArgumentException e) {
 				throw new AnnotatedXmlException(e);
 			}
 		}

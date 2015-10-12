@@ -19,7 +19,7 @@ public class Utils {
 	 * @return A map of the field and their annotations
 	 */
 	public static <T extends Annotation> Map<Field, T> getFieldsWithAnnotation(Class<?> clazz, Class<T> annotationClass) {
-		Map<Field, T> map = new HashMap<>();
+		Map<Field, T> map = new HashMap<Field, T>();
 
 		while(clazz != null) {
 			for (Field field : clazz.getDeclaredFields()) {

@@ -52,6 +52,13 @@ public class AnnotatedXmlNode {
 		doInitCollections(element);
 	}
 
+	private final Object parseFromString(Class<?> clazz, String value) {
+		if (clazz == Boolean.TYPE) return Boolean.parseBoolean(value);
+		if (clazz == Integer.TYPE) return Integer.parseInt(value);
+		if (clazz == Double.TYPE)  return Double.parseDouble(value);
+		return value;
+	}
+
 	private final void doInitText(Element element) throws AnnotatedXmlException {
 		Map<Field, XmlText> map = Utils.getFieldsWithAnnotation(this.getClass(), XmlText.class);
 		for(Field field : map.keySet()) {
@@ -100,7 +107,8 @@ public class AnnotatedXmlNode {
 			if (element.hasAttribute(attrName)) {
 				try {
 					String value = element.getAttribute(attrName);
-					Utils.setField(field, this, value);
+					Object parsedValue = parseFromString(field.getType(), value);
+					Utils.setField(field, this, parsedValue);
 				}
 				catch (Exception e) {
 					throw new AnnotatedXmlException(e);
